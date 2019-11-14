@@ -40,6 +40,8 @@ class RememberPreferences(GObject.Object, PeasGtk.Configurable):
         self._playpause_rb = builder.get_object('play_pause_radiobutton')
         self._play_rb = builder.get_object('play_radiobutton')
         self._pause_rb = builder.get_object('pause_radiobutton')
+        self._source_rb = builder.get_object('select_source_radiobutton')
+        self._playlist_rb = builder.get_object('select_playlist_radiobutton')
 
         startup_state = self.settings[KEY_STARTUP_STATE]
 
@@ -47,8 +49,12 @@ class RememberPreferences(GObject.Object, PeasGtk.Configurable):
             self._playpause_rb.set_active(True)
         elif startup_state == 2:
             self._pause_rb.set_active(True)
-        else:
+        elif startup_state == 3:
             self._play_rb.set_active(True)
+        elif startup_state == 4:
+            self._source_rb.set_active(True)
+        else:
+            self._playlist_rb.set_active(True)
 
         self._first_run = False
 
@@ -58,7 +64,11 @@ class RememberPreferences(GObject.Object, PeasGtk.Configurable):
         if self._first_run:
             return
 
-        if toggle_button == self._play_rb:
+        if toggle_button == self._playlist_rb:
+            startup_state = 5
+        elif toggle_button == self._source_rb:
+            startup_state = 4
+        elif toggle_button == self._play_rb:
             startup_state = 3
         elif toggle_button == self._pause_rb:
             startup_state = 2
