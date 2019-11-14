@@ -29,7 +29,7 @@
     <key type="u" name="startup-state">
       <default>1</default>
       <summary>startup state</summary>
-      <description>1 play-pause, 2 pause, 3 play</description>
+      <description>1 play-pause, 2 pause, 3 play, 4 select source, 5 select last playlist</description>
     </key>
     <key type="s" name="source">
       <default>''</default>
