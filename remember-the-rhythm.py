@@ -220,7 +220,7 @@ class RememberTheRhythm(GObject.Object, Peas.Activatable):
 
         if entry:
             print ("found entry")
-            success, self.play_state = self.shell_player.get_playing()
+            self.play_state = playing
 
             self.location = entry.get_string(RB.RhythmDBPropType.LOCATION)
             print (self.location)
