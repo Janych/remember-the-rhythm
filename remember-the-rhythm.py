@@ -56,6 +56,20 @@ class RememberTheRhythm(GObject.Object, Peas.Activatable):
 
     def do_deactivate(self):
         self.first_run = True
+        self.settings.set_string('playlist', self.playlist)
+        self.settings.set_string('source', self.source_name)
+        if self.location:
+
+            self.settings.set_string(KEY_LOCATION, self.location)
+            self.settings.set_uint(KEY_PLAYBACK_TIME, self.playback_time)
+        self.settings.set_boolean(KEY_PLAY_STATE, self.play_state)
+        if self.source:
+            views = self.source.get_property_views()
+            browser_values_list = []
+            for view in views:
+                browser_values_list.append(view.get_selection())
+            self.browser_values_list = Variant('aas', browser_values_list)
+            self.settings.set_value(KEY_BROWSER_VALUES, self.browser_values_list)
 
     def _connect_signals(self):
         self.shell_player.connect('playing-changed', self.playing_changed)
@@ -196,11 +210,10 @@ class RememberTheRhythm(GObject.Object, Peas.Activatable):
         if source:
             self.source = source
             if self.source in self.playlist_manager.get_playlists():
-                self.settings.set_string('playlist', self.source.props.name)
-                self.settings.set_string('source', '')
+                self.playlist=self.source.props.name
+                self.source_name=''
             else:
-                self.settings.set_string('playlist', '')
-                self.settings.set_string('source', self.source.props.name)
+                self.playlist=''
                 self.source_name = self.source.props.name
 
     def playing_changed(self, player, playing, data=None):
@@ -226,9 +239,6 @@ class RememberTheRhythm(GObject.Object, Peas.Activatable):
             print (self.location)
         else:
             print ("not found entry")
-
-        GLib.idle_add(self.save_rhythm, 0)
-
 
     def elapsed_changed(self, player, entry, data=None):
         """
@@ -257,8 +267,6 @@ class RememberTheRhythm(GObject.Object, Peas.Activatable):
                 save_time = False
 
             self.playback_time = self.shell_player.get_playing_time()[1]
-
-            GLib.idle_add(self.save_rhythm)
 
         except:
             pass
