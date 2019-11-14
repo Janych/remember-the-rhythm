@@ -97,17 +97,27 @@ class RememberTheRhythm(GObject.Object, Peas.Activatable):
             print (self.location)
             self.source = self.shell.guess_source_for_uri(self.location)
 
-        self.shell_player.set_playing_source(self.source)
-        #self.shell_player.set_selected_source(self.source)
-
         # when dealing with playing we start a thread (so we don't block the UI
         # each stage we wait a bit for stuff to start working
         time = self.playback_time
 
         def scenarios():
+
+            def init_source():
+                print("\x1b[150G init source")
+                if self.source:
+                    views = self.source.get_property_views()
+                    for i, view in enumerate(views):
+                        if i < len(self.browser_values_list):
+                            value = self.browser_values_list[i]
+                            if value:
+                                view.set_selection(value)
+                    self.shell.props.display_page_tree.select(self.source)
+
             print ("scenario %d" % self._scenario)
 
             if self._scenario == 1:
+                init_source()
                 # always mute the sound - this helps with the pause scenario
                 # where we have to start playing first before pausing... but
                 # we dont want to here what is playing
@@ -190,18 +200,6 @@ class RememberTheRhythm(GObject.Object, Peas.Activatable):
         :param data:
         :return:
         """
-
-        def init_source():
-            print ("init source")
-            if self.source:
-                views = self.source.get_property_views()
-                for i, view in enumerate(views):
-                    if i in self.browser_values_list:
-                        value = self.browser_values_list[i]
-                        if value:
-                            view.set_selection(value)
-                self.shell.props.display_page_tree.select(self.source)
-                # self.shell_player.jump_to_current()
 
         print("DEBUG-playing_changed")
         if self._scenario != 5:
