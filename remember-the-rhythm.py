@@ -70,6 +70,8 @@ class RememberTheRhythm(GObject.Object, Peas.Activatable):
         :return:
         """
 
+        self._scenario = 4
+
         print("DEBUG - load_complete")
         if not self.location:
             self._scenario = 4
