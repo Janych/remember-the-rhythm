@@ -70,11 +70,10 @@ class RememberTheRhythm(GObject.Object, Peas.Activatable):
         :return:
         """
 
-        self._scenario = 4
+        self._scenario = 5
 
         print("DEBUG - load_complete")
         if not self.location:
-            self._scenario = 4
             self.first_run = True
             self._connect_signals()
             return
@@ -113,7 +112,8 @@ class RememberTheRhythm(GObject.Object, Peas.Activatable):
                 # where we have to start playing first before pausing... but
                 # we dont want to here what is playing
 
-                #p = subprocess.Popen(['amixer set Master mute > /dev/null'], shell=True, stdout=subprocess.PIPE)
+                ok,self.volume=self.shell_player.get_volume() # Я добавляю, чтобы звук не мешал
+                self.shell_player.set_volume(0)
                 self._scenario += 1
                 return True
 
@@ -138,17 +138,20 @@ class RememberTheRhythm(GObject.Object, Peas.Activatable):
                     # so basically nothing we can do - just let the stream play
                     self._scenario += 1
                     return True
+                self._scenario += 1
 
-            self._scenario = 4
-            # for the playing entry attempt to move to the remembered time
-            try:
-                self.shell_player.set_playing_time(time)
-            except:
-                # fallthrough ... some streams - radio - cannot seek
-                pass
+            if self._scenario == 4:
+                # for the playing entry attempt to move to the remembered time
+                try:
+                    self.shell_player.set_playing_time(time)
+                except:
+                    # fallthrough ... some streams - radio - cannot seek
+                    pass
+                self._scenario += 1
+                return True
 
             # unmute and end the thread
-            #p = subprocess.Popen(['amixer set Master unmute > /dev/null'], shell=True, stdout=subprocess.PIPE)
+            self.shell_player.set_volume(self.volume)
             return False
 
         self._scenario = 1
@@ -166,7 +169,7 @@ class RememberTheRhythm(GObject.Object, Peas.Activatable):
         :return:
         """
         print ("DEBUG-playing source changed")
-        if self._scenario != 4:
+        if self._scenario != 5:
             return
 
         if source:
@@ -201,7 +204,7 @@ class RememberTheRhythm(GObject.Object, Peas.Activatable):
                 # self.shell_player.jump_to_current()
 
         print("DEBUG-playing_changed")
-        if self._scenario != 4:
+        if self._scenario != 5:
             return
 
         entry = self.shell_player.get_playing_entry()
@@ -231,7 +234,7 @@ class RememberTheRhythm(GObject.Object, Peas.Activatable):
         if not self.first_run:
             return
 
-        if self._scenario != 4:
+        if self._scenario < 4:
             try:
                 self.shell_player.set_playing_time(self.playback_time)
             except:
