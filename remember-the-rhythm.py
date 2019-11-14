@@ -259,41 +259,11 @@ class RememberTheRhythm(GObject.Object, Peas.Activatable):
             return
 
         try:
-            if self.playback_time:
-                save_time = True
-            else:
-                save_time = False
-
-            if save_time and self.playback_time == self.shell_player.get_playing_time()[1]:
-                save_time = False
 
             self.playback_time = self.shell_player.get_playing_time()[1]
 
         except:
             pass
-
-
-    def save_rhythm(self, pb_time=None):
-        """
-        This actually saves info into gsettings
-        :param pb_time:
-        :return:
-        """
-        if self.location:
-            pb_time = pb_time is None and self.playback_time or pb_time is None
-            self.settings.set_uint(KEY_PLAYBACK_TIME, pb_time)
-            self.settings.set_string(KEY_LOCATION, self.location)
-            #print ("last location %s" % self.location)
-        self.settings.set_boolean(KEY_PLAY_STATE, self.play_state)
-
-        if self.source:
-            views = self.source.get_property_views()
-            browser_values_list = []
-            for view in views:
-                browser_values_list.append(view.get_selection())
-            self.browser_values_list = Variant('aas', browser_values_list)
-            self.settings.set_value(KEY_BROWSER_VALUES, self.browser_values_list)
-
 
     def _import(self):
         """
