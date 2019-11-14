@@ -256,6 +256,7 @@ class RememberTheRhythm(GObject.Object, Peas.Activatable):
                 self.shell_player.set_playing_time(self.playback_time)
             except:
                 pass
+            return
 
         try:
             if self.playback_time:
