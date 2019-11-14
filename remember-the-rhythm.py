@@ -42,11 +42,9 @@ class RememberTheRhythm(GObject.Object, Peas.Activatable):
     def do_activate(self):
         print ("DEBUG-do_activate")
         self.shell = self.object
-        self.library = self.shell.props.library_source
         self.shell_player = self.shell.props.shell_player
         self.playlist_manager = self.shell.props.playlist_manager
         self.db = self.shell.props.db
-        self.backend_player = self.shell_player.props.player
 
         def try_load(*args):
             if len(self.playlist_manager.get_playlists()) == 0:
