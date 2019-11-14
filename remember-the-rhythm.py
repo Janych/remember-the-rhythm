@@ -226,8 +226,6 @@ class RememberTheRhythm(GObject.Object, Peas.Activatable):
             print (self.location)
         else:
             print ("not found entry")
-            self.play_state = False
-            self.location = ""
 
         GLib.idle_add(self.save_rhythm, 0)
 
