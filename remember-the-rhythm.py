@@ -85,12 +85,19 @@ class RememberTheRhythm(GObject.Object, Peas.Activatable):
             self._connect_signals()
             return
 
-        if self.playlist:
+        if self.startup_state == 5:
             playlists = self.playlist_manager.get_playlists()
-            for playlist in playlists:
-                if playlist.props.name == self.playlist:
-                    self.source = playlist
-                    break
+            if playlists.__len__():
+                last = playlists[len(playlists)-1]
+                if (type(playlists[3]) == RB.StaticPlaylistSource):
+                    self.source = last
+        else:
+            if self.playlist:
+                playlists = self.playlist_manager.get_playlists()
+                for playlist in playlists:
+                    if playlist.props.name == self.playlist:
+                        self.source = playlist
+                        break
 
         # now switch to the correct source to play the remembered entry
         if not self.source:
@@ -118,6 +125,10 @@ class RememberTheRhythm(GObject.Object, Peas.Activatable):
 
             if self._scenario == 1:
                 init_source()
+                # If you need to select a playlist or other source and that's it
+                if self.startup_state in [4,5]:
+                    self._scenario = 5
+                    return False
                 # always mute the sound - this helps with the pause scenario
                 # where we have to start playing first before pausing... but
                 # we dont want to here what is playing
